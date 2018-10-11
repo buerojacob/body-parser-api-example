@@ -1,3 +1,6 @@
+// https://www.npmjs.com/package/body-parser
+// https://github.com/petkivim/nodejs-rest-api-example
+
 'use strict';
 
 var express = require('express');
@@ -25,6 +28,14 @@ app.post('/', function (req, res) {
    res.end(JSON.stringify(response));
 });
 
+
+/* Test mit postman
+   Einstellungen POST body raw json
+   body zum senden:
+  {
+	"Name": "Jacob", 
+	"Vorname": "Claude"
+  } */
 app.post('/auth', function (req, res) {
   if (!req.body) {return res.sendStatus(400)} else {
     const name = req.body.Name;
