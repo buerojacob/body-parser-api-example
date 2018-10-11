@@ -1,5 +1,9 @@
 // https://www.npmjs.com/package/body-parser
 // https://github.com/petkivim/nodejs-rest-api-example
+// jacobc@ubuntu:~/node_projects/nodejs-rest-api-example$ git remote set-url origin https://github.com/buerojacob/body-parser-api-example
+// jacobc@ubuntu:~/node_projects/nodejs-rest-api-example$ git push -u origin master
+// jacobc@ubuntu:~/node_projects/nodejs-rest-api-example$ git remote set-url origin https://github.com/buerojacob/body-parser-api-example
+// jacobc@ubuntu:~/node_projects/nodejs-rest-api-example$ git push -u origin master
 
 'use strict';
 
