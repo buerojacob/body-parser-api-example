@@ -2,6 +2,7 @@
 // https://github.com/petkivim/nodejs-rest-api-example
 // https://www.sitepoint.com/how-to-use-ssltls-with-node-js/
 // https://github.com/zhedahht/aci-ssl-helloworld
+// https://radiostud.io/nodeexpress-application-over-https/
 // jacobc@ubuntu:~/node_projects/nodejs-rest-api-example$ git remote set-url origin https://github.com/buerojacob/body-parser-api-example
 // jacobc@ubuntu:~/node_projects/nodejs-rest-api-example$ git push -u origin master
 // jacobc@ubuntu:~/node_projects/nodejs-rest-api-example$ git remote set-url origin https://github.com/buerojacob/body-parser-api-example
@@ -12,17 +13,19 @@
 var express = require('express');
 var bodyParser  = require("body-parser");
 
-const https = require('https'), fs = require('fs'), helmet = require('helmet');
+const https = require('https'), fs = require('fs') /* , helmet = require('helmet') */ ;
 
 const options = {
-  key: fs.readFileSync('/srv/www/keys/my-site-key.pem'),
-  cert: fs.readFileSync('/srv/www/keys/chain.pem'),
-  dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem')
+  key: fs.readFileSync('/usr/src/app/server.key'),
+  cert: fs.readFileSync('/usr/src/app/server.crt'),
+  // dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem')
 };
+
+
 
 var app = express();
 
-app.use(helmet()); // Add Helmet as a middleware
+/* app.use(helmet()); */ // Add Helmet as a middleware
 
 //Here we are configuring express to use body-parser as middle-ware.
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -54,13 +57,41 @@ app.post('/', function (req, res) {
 	"Name": "Jacob", 
 	"Vorname": "Claude"
   } */
-app.post('/auth', function (req, res) {
+app.post('/testJSON', function (req, res) {
   if (!req.body) {return res.sendStatus(400)} else {
-    const name = req.body.Name;
-    const vorname = req.body.Vorname;
-    res.send('Name: ' + name + ' Vorname: ' + vorname);
+    const nameText = req.body.Name;
+    const vornameText = req.body.Vorname;
+    const myObjJSON = { "Name": nameText, "Vorname": vornameText };
+    const myObjString = JSON.stringify(myObjJSON);
+    const myObjJava = JSON.parse(myObjString);
+    const nameJava = myObjJava.Name;
+    const vornameJava = myObjJava.Vorname;
+    res.send(JSON.stringify(myObjJSON) + " / " + nameJava + " / " + vornameJava);
+    // res.send(JSON.stringify(nameJava));
   }
   });
+
+  app.post('/testMongoDb', function (req, res) {
+    if (!req.body) {return res.sendStatus(400)} else {
+      const dbuser = req.body.dbuser;
+      // const dbuser = "jacobc";
+      const dbpassword = req.body.dbpassword;
+      // const dbpassword = "m2BhR$mla";
+      const mongoose = require('mongoose');
+      const url = "mongodb://" + dbuser + ":" + dbpassword +"@ds115592.mlab.com:15592/opensesdb";
+      // const url = "mongodb://jacobc:m2BhR$mla@ds115592.mlab.com:15592/opensesdb";
+      // mongoose.connect('url');
+      mongoose.connect(url, {useNewUrlParser: true });
+      const db = mongoose.connection;
+      db.on('error', console.error.bind(console, 'connection error:'));
+      db.once('open', function() {
+        // res.send(JSON.stringify("we're connected!"));
+        res.send(JSON.stringify("we're connected!" + " user: " + dbuser + " pw: " + dbpassword));
+        // 
+      });
+      db.close;
+    }
+    });
 
 app.put('/', function (req, res) {
    res.writeHead(200, {'Content-Type': 'application/json'});
@@ -74,7 +105,7 @@ app.delete('/', function (req, res) {
    res.end(JSON.stringify(response));
 });
 
-var server = app.listen(4000, function () {
+var server = app.listen(80, function () {
 
   var host = server.address().address
   var port = server.address().port
@@ -83,4 +114,4 @@ var server = app.listen(4000, function () {
 
 });
 
-https.createServer(options, app).listen(8080);
+https.createServer(options, app).listen(443);

@@ -11,6 +11,6 @@ RUN npm install
 # Copy source
 COPY . /usr/src/app
 
-EXPOSE 4000
-EXPOSE 8080
+EXPOSE 80
+EXPOSE 443
 CMD [ "npm", "start" ]
